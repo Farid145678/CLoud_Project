@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if product else 'New' }} Product · ShopCloud{% endblock %}
+{% block content %}
+<div class="form-page wide">
+  <div class="form-card">
+    <h2>{{ 'Edit Product' if product else 'Add New Product' }}</h2>
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="field">
+        {{ form.name.label }}
+        {{ form.name(placeholder="Product name") }}
+        {% for e in form.name.errors %}<p class="err">{{ e }}</p>{% endfor %}
+      </div>
+      <div class="field">
+        {{ form.description.label }}
+        {{ form.description(rows=4, placeholder="Describe your product...") }}
+      </div>
+      <div class="fields-row">
+        <div class="field">
+          {{ form.price.label }}
+          {{ form.price(placeholder="0.00") }}
+          {% for e in form.price.errors %}<p class="err">{{ e }}</p>{% endfor %}
+        </div>
+        <div class="field">
+          {{ form.stock.label }}
+          {{ form.stock(placeholder="0") }}
+          {% for e in form.stock.errors %}<p class="err">{{ e }}</p>{% endfor %}
+        </div>
+      </div>
+      <div class="field">
+        {{ form.category_id.label }}
+        {{ form.category_id(class="select") }}
+      </div>
+      <div class="field">
+        {{ form.image.label }}
+        {{ form.image() }}
+        {% if product and product.image_key %}
+          <p class="muted">Current image will be kept unless you upload a new one.</p>
+        {% endif %}
+        {% for e in form.image.errors %}<p class="err">{{ e }}</p>{% endfor %}
+      </div>
+      <div class="field checkbox-field">
+        {{ form.is_active() }} {{ form.is_active.label }}
+      </div>
+      <div class="form-actions">
+        {{ form.submit(class="btn btn-primary") }}
+        <a href="{{ url_for('seller.dashboard') }}" class="btn">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

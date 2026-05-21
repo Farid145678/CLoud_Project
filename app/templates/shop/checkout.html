@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Checkout · ShopCloud{% endblock %}
+{% block content %}
+<div class="checkout-layout">
+  <div class="checkout-form">
+    <h2>Checkout</h2>
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="field">
+        {{ form.shipping_name.label }}
+        {{ form.shipping_name(placeholder="Full name for delivery") }}
+        {% for e in form.shipping_name.errors %}<p class="err">{{ e }}</p>{% endfor %}
+      </div>
+      <div class="field">
+        {{ form.shipping_addr.label }}
+        {{ form.shipping_addr(rows=3, placeholder="Street, City, Postal Code, Country") }}
+        {% for e in form.shipping_addr.errors %}<p class="err">{{ e }}</p>{% endfor %}
+      </div>
+      <div class="payment-note">
+        💳 <strong>Demo mode</strong> — no real payment is processed.
+      </div>
+      {{ form.submit(class="btn btn-primary btn-full btn-lg") }}
+    </form>
+  </div>
+
+  <div class="checkout-summary">
+    <h3>Order summary</h3>
+    {% for pid, item in cart.items() %}
+      <div class="summary-item">
+        <span>{{ item.name }} × {{ item.qty }}</span>
+        <span>${{ "%.2f"|format(item.price|float * item.qty) }}</span>
+      </div>
+    {% endfor %}
+    <hr>
+    <div class="summary-total">
+      <span>Total</span><strong>${{ "%.2f"|format(total) }}</strong>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+# Local development only — mirrors prod structure
+version: "3.9"
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - SECRET_KEY=dev-secret-local
+      - DATABASE_URL=postgresql+psycopg2://shopcloud:shopcloud@db:5432/shopcloud
+      - STORAGE_BACKEND=local
+      - LOCAL_STORAGE_DIR=/app/local_storage
+      - PUBLIC_BASE_URL=http://localhost:5000
+    volumes:
+      - ./local_storage:/app/local_storage
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: shopcloud
+      POSTGRES_USER: shopcloud
+      POSTGRES_PASSWORD: shopcloud
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shopcloud"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

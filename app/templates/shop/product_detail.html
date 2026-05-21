@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} · ShopCloud{% endblock %}
+{% block content %}
+<div class="product-detail">
+  <div class="product-detail-img">
+    <img src="{{ product.image_url(storage) }}" alt="{{ product.name }}"
+         onerror="this.src='/static/img/placeholder.png'">
+  </div>
+  <div class="product-detail-info">
+    <p class="breadcrumb">
+      <a href="{{ url_for('shop.catalog') }}">Products</a>
+      {% if product.category %}
+        › <a href="{{ url_for('shop.catalog', category=product.category.slug) }}">{{ product.category.name }}</a>
+      {% endif %}
+    </p>
+    <h1>{{ product.name }}</h1>
+    <p class="price-lg">${{ "%.2f"|format(product.price) }}</p>
+    <p class="stock-badge {{ 'low' if product.stock < 5 else '' }}">
+      {% if product.stock == 0 %}Out of stock
+      {% elif product.stock < 5 %}Only {{ product.stock }} left!
+      {% else %}{{ product.stock }} in stock{% endif %}
+    </p>
+    <div class="description">{{ product.description or "No description provided." }}</div>
+    <p class="seller-info">Sold by <strong>{{ product.seller.full_name }}</strong></p>
+
+    {% if is_own %}
+      <div class="own-product-note">
+        🏪 This is your own product — you cannot purchase it.
+      </div>
+    {% elif product.stock > 0 %}
+      <form method="post" action="{{ url_for('shop.add_to_cart', product_id=product.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-primary btn-lg" type="submit">Add to cart 🛍️</button>
+      </form>
+    {% else %}
+      <button class="btn btn-disabled btn-lg" disabled>Out of stock</button>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Products · ShopCloud{% endblock %}
+{% block content %}
+
+<div class="catalog-layout">
+  <aside class="sidebar">
+    <h3>Categories</h3>
+    <ul class="cat-list">
+      <li><a href="{{ url_for('shop.catalog') }}" class="{{ 'active' if not cat_slug }}">All</a></li>
+      {% for cat in categories %}
+        <li>
+          <a href="{{ url_for('shop.catalog', category=cat.slug) }}"
+             class="{{ 'active' if cat.slug == cat_slug }}">
+            {{ cat.name }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <div class="catalog-main">
+    <form class="search-bar" method="get">
+      <input type="text" name="q" value="{{ q }}" placeholder="Search products…">
+      {% if cat_slug %}<input type="hidden" name="category" value="{{ cat_slug }}">{% endif %}
+      <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+
+    <p class="result-count">{{ products|length }} product{{ '' if products|length == 1 else 's' }}</p>
+
+    {% if products %}
+      <div class="product-grid">
+        {% for p in products %}
+          <a class="product-card" href="{{ url_for('shop.product_detail', product_id=p.id) }}">
+            <div class="product-img">
+              <img src="{{ p.image_url(storage) }}" alt="{{ p.name }}"
+                   onerror="this.src='/static/img/placeholder.png'">
+            </div>
+            <div class="product-info">
+              <h3>{{ p.name }}</h3>
+              <p class="price">${{ "%.2f"|format(p.price) }}</p>
+              <p class="stock {% if p.stock < 5 %}low{% endif %}">
+                {{ p.stock }} in stock
+              </p>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>No products found{% if q %} for "{{ q }}"{% endif %}.</p>
+        <a href="{{ url_for('shop.catalog') }}">Clear filters</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

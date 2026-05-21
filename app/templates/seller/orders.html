@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}My Sales · ShopCloud{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h2>My Sales</h2>
+  <a href="{{ url_for('seller.dashboard') }}" class="btn">← Dashboard</a>
+</div>
+
+{% if orders %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Order #</th>
+        <th>Date</th>
+        <th>Customer</th>
+        <th>Items (yours)</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th>Update</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for o in orders %}
+        <tr>
+          <td>#{{ o.id }}</td>
+          <td>{{ o.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>{{ o.buyer.full_name }}</td>
+          <td>
+            <ul class="order-items-mini">
+              {% for item in o.items %}
+                {% if item.product.seller_id == current_user.id %}
+                  <li>{{ item.product.name }} × {{ item.quantity }}</li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          </td>
+          <td>${{ "%.2f"|format(o.total_amount) }}</td>
+          <td>
+            <span class="status-badge status-{{ o.status }}">
+              {{ o.status.replace('_', ' ') }}
+            </span>
+          </td>
+          <td>
+            {% if o.status != 'delivered' %}
+              <form method="post"
+                    action="{{ url_for('seller.update_order_status', order_id=o.id) }}"
+                    class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <select name="status" class="select-sm">
+                  {% for s in ['pending', 'shipped', 'in_transit', 'delivered'] %}
+                    <option value="{{ s }}" {{ 'selected' if o.status == s }}>
+                      {{ s.replace('_', ' ') }}
+                    </option>
+                  {% endfor %}
+                </select>
+                <button class="btn btn-sm btn-primary" type="submit">Update</button>
+              </form>
+            {% else %}
+              <span class="muted">Completed</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="empty-state">
+    <p>No orders yet. When buyers purchase your products, they'll appear here.</p>
+  </div>
+{% endif %}
+{% endblock %}

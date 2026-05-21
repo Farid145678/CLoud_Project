@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}My Orders · ShopCloud{% endblock %}
+{% block content %}
+<h2>My Orders</h2>
+{% if orders %}
+  <table class="table">
+    <thead><tr><th>Order #</th><th>Date</th><th>Total</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for o in orders %}
+        <tr>
+          <td>#{{ o.id }}</td>
+          <td>{{ o.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>${{ "%.2f"|format(o.total_amount) }}</td>
+          <td><span class="status-badge status-{{ o.status }}">{{ o.status }}</span></td>
+          <td><a href="{{ url_for('shop.order_detail', order_id=o.id) }}">View</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="empty-state">
+    <p>No orders yet.</p>
+    <a href="{{ url_for('shop.catalog') }}" class="btn btn-primary">Start shopping</a>
+  </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}ShopCloud — Shop smarter in the cloud{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-text">
+    <h1>Shop smarter,<br>powered by the cloud</h1>
+    <p>Thousands of products from verified sellers. Fast, reliable, always available.</p>
+    <a href="{{ url_for('shop.catalog') }}" class="btn btn-primary btn-lg">Browse products</a>
+    <a href="{{ url_for('auth.register') }}" class="btn btn-outline btn-lg">Start selling</a>
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">Categories</h2>
+  <div class="categories-grid">
+    {% for cat in categories %}
+      <a class="cat-chip" href="{{ url_for('shop.catalog', category=cat.slug) }}">
+        {{ cat.name }}
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">Latest products</h2>
+  {% if products %}
+    <div class="product-grid">
+      {% for p in products %}
+        <a class="product-card" href="{{ url_for('shop.product_detail', product_id=p.id) }}">
+          <div class="product-img">
+            <img src="{{ p.image_url(storage) }}" alt="{{ p.name }}"
+                 onerror="this.src='/static/img/placeholder.png'">
+          </div>
+          <div class="product-info">
+            <h3>{{ p.name }}</h3>
+            <p class="price">${{ "%.2f"|format(p.price) }}</p>
+            {% if p.category %}<span class="tag">{{ p.category.name }}</span>{% endif %}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">No products yet — <a href="{{ url_for('auth.register') }}">be the first to sell!</a></p>
+  {% endif %}
+</section>
+
+{% endblock %}

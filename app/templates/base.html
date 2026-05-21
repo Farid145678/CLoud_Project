@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ShopCloud{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a class="brand" href="{{ url_for('shop.index') }}">🛒 ShopCloud</a>
+    <div class="nav-links">
+      <a href="{{ url_for('shop.catalog') }}">Products</a>
+      {% if current_user.is_authenticated %}
+        {% if current_user.is_seller or current_user.is_admin %}
+          <a href="{{ url_for('seller.dashboard') }}">My Products</a>
+          <a href="{{ url_for('seller.seller_orders') }}">My Sales</a>
+        {% endif %}
+        {% if current_user.is_admin %}
+          <a href="{{ url_for('admin.overview') }}">Admin</a>
+        {% endif %}
+        <a href="{{ url_for('shop.my_orders') }}">Orders</a>
+        <a href="{{ url_for('shop.cart') }}" class="cart-icon">
+          🛍️ Cart {% if session.get('cart') %}<span class="badge">{{ session['cart']|length }}</span>{% endif %}
+        </a>
+        <span class="nav-user">{{ current_user.full_name }}</span>
+        <form method="post" action="{{ url_for('auth.logout') }}" class="inline-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn-link" type="submit">Logout</button>
+        </form>
+      {% else %}
+        <a href="{{ url_for('shop.cart') }}" class="cart-icon">🛍️ Cart</a>
+        <a href="{{ url_for('auth.login') }}">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Sign up</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="alert alert-{{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p>ShopCloud &copy; 2026 · CS436 Cloud Computing Project · Built on AWS</p>
+  </div>
+</footer>
+
+</body>
+</html>

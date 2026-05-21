@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}All Products · Admin · ShopCloud{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h2>All Products</h2>
+  <a href="{{ url_for('admin.overview') }}" class="btn">← Back</a>
+</div>
+<table class="table">
+  <thead><tr><th>ID</th><th>Name</th><th>Seller</th><th>Price</th><th>Stock</th><th>Active</th><th>Actions</th></tr></thead>
+  <tbody>
+    {% for p in products %}
+      <tr>
+        <td>{{ p.id }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.seller.full_name }}</td>
+        <td>${{ "%.2f"|format(p.price) }}</td>
+        <td>{{ p.stock }}</td>
+        <td>{{ '✅' if p.is_active else '❌' }}</td>
+        <td>
+          <a href="{{ url_for('seller.edit_product', product_id=p.id) }}" class="btn btn-sm">Edit</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

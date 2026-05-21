@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Login · ShopCloud{% endblock %}
+{% block content %}
+<div class="form-page">
+  <div class="form-card">
+    <h2>Welcome back</h2>
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="field">
+        {{ form.email.label }}
+        {{ form.email(placeholder="you@example.com") }}
+        {% for e in form.email.errors %}<p class="err">{{ e }}</p>{% endfor %}
+      </div>
+      <div class="field">
+        {{ form.password.label }}
+        {{ form.password() }}
+        {% for e in form.password.errors %}<p class="err">{{ e }}</p>{% endfor %}
+      </div>
+      {{ form.submit(class="btn btn-primary btn-full") }}
+    </form>
+    <p class="form-alt">No account? <a href="{{ url_for('auth.register') }}">Sign up</a></p>
+    <p class="form-alt muted">Admin: admin@shopcloud.com / admin123</p>
+  </div>
+</div>
+{% endblock %}
